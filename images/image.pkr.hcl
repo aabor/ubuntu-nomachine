@@ -60,6 +60,10 @@ build {
     source      = "./deluge/core.conf"
     destination = "/tmp/"
   }
+  provisioner "file" {
+    source      = "./pgp_aws.pub"
+    destination = "/tmp/"
+  }  
   provisioner "shell" {
     script = "../scripts/setup.sh"
   }

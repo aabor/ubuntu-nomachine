@@ -143,12 +143,32 @@ sudo apt install deluge -y
 sudo mkdir -p /home/aabor/.config/deluge
 sudo cp /tmp/core.conf /home/aabor/.config/deluge/
 
+cd /tmp
+sudo curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+# verify aws signature
+sudo curl -o awscliv2.sig https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip.sig
+sudo -u aabor gpg --import /tmp/pgp_aws.pub
+sudo -u aabor gpg --verify awscliv2.sig awscliv2.zip
+# gpg: Signature made Wed 23 Mar 2022 08:40:49 PM MSK
+# gpg:                using RSA key FB5DB77FD5C118B80511ADA8A6310ACC4672475C
+# gpg: Good signature from "AWS CLI Team <aws-cli@amazon.com>" [unknown]
+# gpg: WARNING: This key is not certified with a trusted signature!
+# gpg:          There is no indication that the signature belongs to the owner.
+# Primary key fingerprint: FB5D B77F D5C1 18B8 0511  ADA8 A631 0ACC 4672 475C
+sudo unzip awscliv2.zip
+sudo ./aws/install
+# You can now run: /usr/local/bin/aws --version
+aws --version
+
 # install KVM
 sudo apt update
 sudo apt install -y qemu-kvm virt-manager libvirt-daemon-system virtinst libvirt-clients bridge-utils
 sudo systemctl enable --now libvirtd
 sudo usermod -aG kvm aabor
 sudo usermod -aG libvirt aabor
+sudo apt-get install libguestfs-tools -y
+# man guestmount
+
 # sudo systemctl start libvirtd
 # sudo systemctl status libvirtd
 # ● libvirtd.service - Virtualization daemon

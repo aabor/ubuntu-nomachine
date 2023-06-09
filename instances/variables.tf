@@ -19,3 +19,7 @@ variable "region"{
   description = "The region Terraform deploys your instance"
 }
 
+variable "availability_zone" {
+  default = "us-east-2a"  
+}
+

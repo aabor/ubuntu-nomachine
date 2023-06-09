@@ -10,7 +10,6 @@ terraform {
   }
   required_version = ">= 0.14.5"
 }
-
 provider "aws" {
   region = var.region
 }
@@ -57,14 +56,27 @@ resource "aws_security_group" "ssh" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
-
+resource "aws_ebs_volume" "vms" {
+  availability_zone = var.availability_zone
+  size              = 40
+  tags = {
+    Name = "vms"
+  }
+}
+resource "aws_volume_attachment" "vms" {
+  device_name = "/dev/sdd"
+  volume_id   = aws_ebs_volume.vms.id
+  instance_id = aws_instance.nomachine.id
+  skip_destroy = false
+}
 resource "aws_instance" "nomachine" {
-  ami                         = "ami-079a547fc5d4eb0d3"
+  ami               = "ami-031c0eac039043a2e"
+  availability_zone = var.availability_zone
   #t2.medium 2/4/5,  c6a.xlarge 4/8/12.5/0.153 USD per Hour, t3.xlarge 4vcpu/ 16 Gb/ up to 5 Gigabit/ 0.1664 USD per Hour
-  instance_type               = "t3.xlarge"
+  # "t3.xlarge"
+  instance_type               = "t2.medium"
   vpc_security_group_ids      = [aws_security_group.ssh.id, aws_security_group.nomachine.id]
   associate_public_ip_address = true
-
   tags = {
     Name = "aabor@ubuntu-nomachine"
   }
@@ -72,4 +84,7 @@ resource "aws_instance" "nomachine" {
 
 output "public_ip" {
   value = aws_instance.nomachine.public_ip
+}
+output "vms_volume_id" {
+  value = aws_ebs_volume.vms.id
 }
